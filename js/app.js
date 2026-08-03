@@ -1,5 +1,5 @@
 // Cấu hình URL API tới Hosting Viettel
-const API_URL = "https://domain-cua-ban.com/api"; 
+const API_URL = "https://xabinhhung.gov.vn/api_tracnghiem"; 
 
 let candidateData = {};
 let examDuration = 300; // 5 phút
