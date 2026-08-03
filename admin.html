@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><title>Admin - Upload Đề Thi</title></head>
+<body>
+    <h2>Upload Ngân Hàng Câu Hỏi (.docx)</h2>
+    <input type="file" id="wordFile" accept=".docx">
+    <button onclick="uploadFile()">Import vào Database</button>
+    <p id="status"></p>
+
+    <script>
+        function uploadFile() {
+            let file = document.getElementById('wordFile').files[0];
+            if (!file) { alert("Vui lòng chọn file Word!"); return; }
+
+            let formData = new FormData();
+            formData.append("word_file", file);
+
+            document.getElementById('status').innerText = "Đang xử lý...";
+
+            // Nhớ thay bằng tên miền Viettel của bạn
+            fetch("https://domain-cua-ban.com/api/api_upload.php", {
+                method: "POST",
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('status').innerText = data.message;
+            });
+        }
+    </script>
+</body>
+</html>
