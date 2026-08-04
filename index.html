@@ -4,43 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Thi Trắc Nghiệm</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f4f7f6; padding: 20px; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .hidden { display: none; }
-        .form-group { margin-bottom: 15px; }
-        input { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; }
-        button { background: #007bff; color: white; border: none; padding: 12px 20px; cursor: pointer; width: 100%; }
-        .timer { font-size: 24px; color: red; font-weight: bold; text-align: right; }
-        .question-box { margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 15px; }
-        .options label { display: block; margin: 8px 0; cursor: pointer; }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <div class="container">
     <!-- Màn hình 1: Ghi danh -->
     <div id="register-screen">
-        <h2 style="text-align: center;">ĐĂNG KÝ VÀO THI</h2>
-        <div class="form-group"><label>Họ và tên</label><input type="text" id="full_name"></div>
-        <div class="form-group"><label>Năm sinh</label><input type="number" id="birth_year"></div>
-        <div class="form-group"><label>Trường</label><input type="text" id="school"></div>
+        <h2>ĐĂNG KÝ VÀO THI</h2>
+        <div class="form-group"><label>Họ và tên</label><input type="text" id="full_name" placeholder="Ví dụ: Nguyễn Văn A"></div>
+        <div class="form-group"><label>Năm sinh</label><input type="number" id="birth_year" placeholder="Ví dụ: 2005"></div>
+        <div class="form-group"><label>Trường</label><input type="text" id="school" placeholder="Ví dụ: THPT Nguyễn Trãi"></div>
         <button onclick="startExam()">Bắt đầu thi</button>
     </div>
 
     <!-- Màn hình 2: Làm bài thi -->
     <div id="exam-screen" class="hidden">
         <div class="timer" id="timer-display">05:00</div>
+        <div style="clear: both;"></div>
         <h2>BÀI THI TRẮC NGHIỆM</h2>
         <div id="quiz-container"></div>
-        <button onclick="submitExam()" style="background: #28a745;">Nộp bài</button>
+        <button onclick="submitExam()" class="btn-success">Nộp bài</button>
     </div>
 
     <!-- Màn hình 3: Kết quả -->
     <div id="result-screen" class="hidden">
-        <h2 style="text-align: center;">KẾT QUẢ BÀI THI</h2>
-        <div id="result-content" style="text-align: center; font-size: 18px;"></div>
-        <button onclick="location.reload()" style="margin-top: 20px;">Làm bài mới</button>
+        <h2>KẾT QUẢ BÀI THI</h2>
+        <div id="result-content" style="text-align: center; font-size: 18px; line-height: 1.8;"></div>
+        <button onclick="location.reload()" style="margin-top: 25px;">Làm bài mới</button>
     </div>
 </div>
 
