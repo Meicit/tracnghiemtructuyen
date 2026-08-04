@@ -1,12 +1,24 @@
 <!DOCTYPE html>
-<html>
-<head><title>Admin - Upload Đề Thi</title></head>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Upload Đề Thi</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
 <body>
-    <h2>Upload Ngân Hàng Câu Hỏi (.docx)</h2>
-    <input type="file" id="wordFile" accept=".docx">
-    <button onclick="uploadFile()">Import vào Database</button>
-    <p id="status"></p>
+    <div class="container" style="max-width: 600px; margin-top: 40px;">
+        <h2>Upload Ngân Hàng Câu Hỏi (.docx)</h2>
+        
+        <div class="form-group">
+            <label>Chọn file Word (chứa các chuyên đề và câu hỏi):</label>
+            <input type="file" id="wordFile" accept=".docx">
+        </div>
+        
+        <button onclick="uploadFile()" class="btn-success">Import vào Database</button>
+        <p id="status"></p>
+    </div>
 
+    <!-- Script gọi thẳng lên API Viettel -->
     <script>
         function uploadFile() {
             let file = document.getElementById('wordFile').files[0];
@@ -15,16 +27,19 @@
             let formData = new FormData();
             formData.append("word_file", file);
 
-            document.getElementById('status').innerText = "Đang xử lý...";
+            document.getElementById('status').innerText = "Đang xử lý dữ liệu... Vui lòng chờ!";
 
-            // Nhớ thay bằng tên miền Viettel của bạn
-            fetch("https://xabinhhung.gov.vn/api_tracnghiem/api_upload.php", {
+            // Thay bằng domain Viettel của bạn
+            fetch("https://domain-cua-ban.com/api_tracnghiem/api_upload.php", {
                 method: "POST",
                 body: formData
             })
             .then(res => res.json())
             .then(data => {
                 document.getElementById('status').innerText = data.message;
+            })
+            .catch(error => {
+                document.getElementById('status').innerText = "Lỗi kết nối tới Server!";
             });
         }
     </script>
