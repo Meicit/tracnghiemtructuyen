@@ -6,18 +6,48 @@ let examDuration = 300; // 5 phút
 let timerInterval;
 
 function startExam() {
-    candidateData.full_name = document.getElementById('full_name').value;
-    candidateData.birth_year = document.getElementById('birth_year').value;
-    candidateData.school = document.getElementById('school').value;
+    candidateData.full_name = document.getElementById('full_name').value.trim();
+    candidateData.birth_year = document.getElementById('birth_year').value.trim();
+    candidateData.school = document.getElementById('school').value.trim();
 
     if(!candidateData.full_name || !candidateData.birth_year || !candidateData.school) {
         alert("Vui lòng nhập đầy đủ thông tin!");
         return;
     }
 
-    document.getElementById('register-screen').classList.add('hidden');
-    document.getElementById('exam-screen').classList.remove('hidden');
-    fetchExam();
+    // Tạm đổi nút thành "Đang kiểm tra..."
+    const startBtn = document.querySelector('#register-screen button');
+    startBtn.innerText = "Đang kiểm tra dữ liệu...";
+    startBtn.disabled = true;
+
+    // Gửi thông tin lên API kiểm tra
+    fetch(`${API_URL}/api_check_candidate.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(candidateData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        startBtn.innerText = "Bắt đầu thi";
+        startBtn.disabled = false;
+
+        if (data.status === "success" && data.exists === true) {
+            // Chặn lại nếu đã thi
+            alert("Bạn đã hoàn thành bài thi trước đó rồi. Mỗi thí sinh chỉ được thi 1 lần!");
+        } else if (data.status === "success" && data.exists === false) {
+            // Cho phép thi
+            document.getElementById('register-screen').classList.add('hidden');
+            document.getElementById('exam-screen').classList.remove('hidden');
+            fetchExam();
+        } else {
+            alert("Lỗi kiểm tra thông tin!");
+        }
+    })
+    .catch(error => {
+        startBtn.innerText = "Bắt đầu thi";
+        startBtn.disabled = false;
+        alert("Không thể kết nối tới máy chủ kiểm tra!");
+    });
 }
 
 function fetchExam() {
