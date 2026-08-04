@@ -45,7 +45,9 @@ function saveState() {
 }
 
 function startExam() {
-    candidateData.full_name = document.getElementById('full_name').value.trim();
+    candidateData.full_name = document.getElementById('full_name').value.replace(/\s+/g, ' ').trim();
+
+    
     candidateData.birth_year = document.getElementById('birth_year').value.trim();
     candidateData.school = document.getElementById('school').value.trim();
 
