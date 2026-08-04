@@ -1,9 +1,48 @@
-// Thay đổi thành tên miền chứa API trên Viettel của bạn
+// NHỚ THAY ĐỔI ĐƯỜNG DẪN NÀY THÀNH TÊN MIỀN CỦA BẠN TRÊN VIETTEL
 const API_URL = "https://xabinhhung.gov.vn/api_tracnghiem"; 
 
 let candidateData = {};
-let examDuration = 300; // 5 phút
+let examDuration = 300; // 5 phút (300 giây)
 let timerInterval;
+let examQuestions = []; 
+let userAnswers = {};
+
+// 1. TỰ ĐỘNG KHÔI PHỤC BÀI THI KHI TẢI TRANG (F5 HOẶC MỞ LẠI TAB)
+window.onload = function() {
+    const savedState = localStorage.getItem('quiz_state');
+    
+    if (savedState) {
+        const state = JSON.parse(savedState);
+        candidateData = state.candidate;
+        examQuestions = state.questions;
+        userAnswers = state.answers || {};
+        examDuration = state.timeRemaining;
+
+        if (examDuration > 0) {
+            alert("Bạn có bài thi đang làm dở. Hệ thống đã tự động khôi phục!");
+            document.getElementById('register-screen').classList.add('hidden');
+            document.getElementById('exam-screen').classList.remove('hidden');
+            
+            renderExam(examQuestions); // Render lại đúng đề cũ
+            restoreAnswers();          // Tick lại các đáp án đã chọn
+            startTimer();              // Chạy tiếp đồng hồ
+        } else {
+            // Nếu hết giờ mà lỡ tắt web, vào lại nó sẽ tự động nộp bài luôn
+            submitExam();
+        }
+    }
+};
+
+// 2. HÀM LƯU NHÁP VÀO BỘ NHỚ TRÌNH DUYỆT (LOCAL STORAGE)
+function saveState() {
+    const state = {
+        candidate: candidateData,
+        questions: examQuestions,
+        answers: userAnswers,
+        timeRemaining: examDuration
+    };
+    localStorage.setItem('quiz_state', JSON.stringify(state));
+}
 
 function startExam() {
     candidateData.full_name = document.getElementById('full_name').value.trim();
@@ -15,12 +54,11 @@ function startExam() {
         return;
     }
 
-    // Tạm đổi nút thành "Đang kiểm tra..."
     const startBtn = document.querySelector('#register-screen button');
     startBtn.innerText = "Đang kiểm tra dữ liệu...";
     startBtn.disabled = true;
 
-    // Gửi thông tin lên API kiểm tra
+    // Kiểm tra xem thí sinh đã nộp bài trong DB chưa
     fetch(`${API_URL}/api_check_candidate.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -32,12 +70,16 @@ function startExam() {
         startBtn.disabled = false;
 
         if (data.status === "success" && data.exists === true) {
-            // Chặn lại nếu đã thi
             alert("Bạn đã hoàn thành bài thi trước đó rồi. Mỗi thí sinh chỉ được thi 1 lần!");
         } else if (data.status === "success" && data.exists === false) {
-            // Cho phép thi
             document.getElementById('register-screen').classList.add('hidden');
             document.getElementById('exam-screen').classList.remove('hidden');
+            
+            // Khởi tạo mới hoàn toàn
+            localStorage.removeItem('quiz_state');
+            userAnswers = {};
+            examDuration = 300; 
+            
             fetchExam();
         } else {
             alert("Lỗi kiểm tra thông tin!");
@@ -57,7 +99,27 @@ function fetchExam() {
         .then(response => response.json())
         .then(res => {
             if(res.status === "success") {
-                renderExam(res.data);
+                examQuestions = res.data;
+                
+                // LƯU Ý: Tiến hành xáo trộn (Shuffle) ngay tại đây CHỈ 1 LẦN DUY NHẤT
+                examQuestions.sort(() => Math.random() - 0.5);
+                
+                examQuestions.forEach(q => {
+                    let opts = [
+                        { key: 'A', text: q.option_a },
+                        { key: 'B', text: q.option_b },
+                        { key: 'C', text: q.option_c },
+                        { key: 'D', text: q.option_d }
+                    ];
+                    if (q.is_fixed == 0) {
+                        opts.sort(() => Math.random() - 0.5);
+                    }
+                    // Lưu cấu trúc đáp án đã xáo trộn vào mảng để dùng cố định
+                    q.displayOptions = opts; 
+                });
+
+                saveState(); // Lưu ngay vào localStorage
+                renderExam(examQuestions);
                 startTimer();
             } else {
                 alert("Lỗi tải đề thi!");
@@ -70,11 +132,7 @@ function renderExam(questions) {
     const container = document.getElementById('quiz-container');
     container.innerHTML = "";
 
-    // Xáo trộn vị trí 5 câu hỏi
-    questions.sort(() => Math.random() - 0.5);
-
     questions.forEach((q, index) => {
-        // Làm sạch "Câu X:" nếu bị dính từ DB
         let cleanQuestionText = q.question_text.replace(/^Câu\s*\d+[\.\:\-]?\s*/i, '').trim();
 
         let html = `<div class="question-box" data-id="${q.id}">
@@ -83,32 +141,14 @@ function renderExam(questions) {
                         </div>
                         <div class="options">`;
         
-        let optionsArray = [
-            { key: 'A', text: q.option_a },
-            { key: 'B', text: q.option_b },
-            { key: 'C', text: q.option_c },
-            { key: 'D', text: q.option_d }
-        ];
-
-        // Nếu is_fixed == 0 thì xáo trộn mảng đáp án
-        if (q.is_fixed == 0) {
-            optionsArray.sort(() => Math.random() - 0.5);
-        }
-
-        // Mảng nhãn hiển thị cố định luôn luôn là A, B, C, D từ trên xuống
         const displayLabels = ['A', 'B', 'C', 'D'];
 
-        // Vòng lặp in đáp án ra màn hình
-        optionsArray.forEach((opt, optIndex) => {
-            // Lấy nhãn A, B, C, D theo thứ tự vòng lặp (0, 1, 2, 3)
+        q.displayOptions.forEach((opt, optIndex) => {
             let displayLetter = displayLabels[optIndex]; 
-
             html += `<label class="option-row">
-                        <!-- Hiển thị nhãn mới (A, B, C, D chuẩn) -->
                         <span class="option-text"><b>${displayLetter}.</b> ${opt.text}</span>
-                        
-                        <!-- GIỮ NGUYÊN value là opt.key gốc để chấm điểm chính xác -->
-                        <input type="radio" name="q_${q.id}" value="${opt.key}"> 
+                        <!-- Gọi hàm handleAnswerChange mỗi khi thí sinh tick chọn -->
+                        <input type="radio" name="q_${q.id}" value="${opt.key}" onchange="handleAnswerChange('${q.id}', '${opt.key}')"> 
                      </label>`;
         });
 
@@ -117,14 +157,39 @@ function renderExam(questions) {
     });
 }
 
+// 3. LƯU ĐÁP ÁN NGAY KHI THÍ SINH TICK CHỌN
+function handleAnswerChange(qId, selectedValue) {
+    userAnswers[qId] = selectedValue;
+    saveState(); // Cập nhật lại localStorage
+}
+
+// 4. HÀM PHỤC HỒI CÁC ĐÁP ÁN ĐÃ CHỌN (NẾU F5 TRANG)
+function restoreAnswers() {
+    for (let qId in userAnswers) {
+        let radio = document.querySelector(`input[name="q_${qId}"][value="${userAnswers[qId]}"]`);
+        if (radio) {
+            radio.checked = true;
+        }
+    }
+}
+
 function startTimer() {
     const display = document.getElementById('timer-display');
+    
+    // In giờ ra ngay giây đầu tiên tránh độ trễ
+    let m = Math.floor(examDuration / 60);
+    let s = examDuration % 60;
+    display.innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
+
     timerInterval = setInterval(() => {
+        examDuration--;
+        saveState(); // Cứ 1 giây lại lưu tiến độ 1 lần
+
         let m = Math.floor(examDuration / 60);
         let s = examDuration % 60;
         display.innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
         
-        if (--examDuration < 0) {
+        if (examDuration <= 0) {
             clearInterval(timerInterval);
             alert("Hết giờ! Hệ thống tự động nộp bài.");
             submitExam();
@@ -134,8 +199,8 @@ function startTimer() {
 
 function submitExam() {
     clearInterval(timerInterval);
-    let answers = {};
     
+    let answers = {};
     document.querySelectorAll('.question-box').forEach(box => {
         let qId = box.getAttribute('data-id');
         let selected = box.querySelector(`input[name="q_${qId}"]:checked`);
@@ -144,8 +209,13 @@ function submitExam() {
         }
     });
 
-    const payload = { candidate: candidateData, answers: answers };
+    const payload = {
+        candidate: candidateData,
+        answers: answers
+    };
+
     document.querySelector('.btn-success').innerText = "Đang chấm điểm...";
+    document.querySelector('.btn-success').disabled = true;
 
     fetch(`${API_URL}/api_submit_exam.php`, {
         method: "POST",
@@ -154,8 +224,12 @@ function submitExam() {
     })
     .then(res => res.json())
     .then(data => {
+        // --- NỘP THÀNH CÔNG -> XÓA BỘ NHỚ TẠM ---
+        localStorage.removeItem('quiz_state');
+
         document.getElementById('exam-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
+        
         document.getElementById('result-content').innerHTML = `
             <p>Họ và tên: <b>${candidateData.full_name}</b></p>
             <p>Trường: <b>${candidateData.school}</b></p>
@@ -167,5 +241,7 @@ function submitExam() {
     .catch(error => {
         alert("Lỗi nộp bài! Vui lòng thử lại.");
         document.querySelector('.btn-success').innerText = "Nộp bài";
+        document.querySelector('.btn-success').disabled = false;
+        // LƯU Ý: Nếu mạng rớt không nộp được, bộ nhớ tạm KHÔNG bị xóa. Học sinh có thể bấm Nộp lại.
     });
 }
