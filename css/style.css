@@ -1,0 +1,27 @@
+/* --- THIẾT LẬP CHUNG --- */
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; color: #333; padding: 20px; margin: 0; }
+.container { max-width: 800px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.hidden { display: none; }
+h2 { color: #2c3e50; text-align: center; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+
+/* --- FORM GHI DANH & NÚT BẤM --- */
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #34495e; }
+input[type="text"], input[type="number"], input[type="file"] { width: 100%; padding: 12px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccd1d9; border-radius: 6px; font-size: 15px; transition: border-color 0.3s; }
+input:focus { border-color: #3498db; outline: none; }
+button { background: #007bff; color: white; border: none; padding: 14px 20px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; border-radius: 6px; transition: background 0.3s; }
+button:hover { background: #0056b3; }
+button.btn-success { background: #28a745; }
+button.btn-success:hover { background: #218838; }
+
+/* --- GIAO DIỆN BÀI THI DẠNG BẢNG --- */
+.timer { font-size: 24px; color: #e74c3c; font-weight: bold; text-align: right; background: #fadbd8; display: inline-block; padding: 5px 15px; border-radius: 5px; float: right; margin-bottom: 15px; }
+.question-box { background: #ffffff; border: 1px solid #ccd1d9; border-radius: 8px; overflow: hidden; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); clear: both; }
+.question-title { background: #f1f5f9; padding: 15px 20px; font-size: 17px; font-weight: bold; color: #1e293b; border-bottom: 1px solid #ccd1d9; line-height: 1.5; }
+.options { display: flex; flex-direction: column; }
+.options label.option-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; margin: 0; cursor: pointer; background: #ffffff; border-bottom: 1px solid #e2e8f0; transition: background 0.2s; }
+.options label.option-row:last-child { border-bottom: none; }
+.options label.option-row:hover { background: #f8fafc; }
+.option-text { flex: 1; padding-right: 20px; font-size: 16px; color: #334155; }
+.options input[type="radio"] { width: 20px; height: 20px; margin: 0; cursor: pointer; accent-color: #007bff; }
+#status { margin-top: 20px; font-weight: bold; text-align: center; color: #17a2b8; font-size: 16px; }
