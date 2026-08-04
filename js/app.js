@@ -69,12 +69,17 @@ function fetchExam() {
 function renderExam(questions) {
     const container = document.getElementById('quiz-container');
     container.innerHTML = "";
+
+    // Xáo trộn vị trí 5 câu hỏi
     questions.sort(() => Math.random() - 0.5);
 
     questions.forEach((q, index) => {
+        // Làm sạch "Câu X:" nếu bị dính từ DB
+        let cleanQuestionText = q.question_text.replace(/^Câu\s*\d+[\.\:\-]?\s*/i, '').trim();
+
         let html = `<div class="question-box" data-id="${q.id}">
                         <div class="question-title">
-                            Câu ${index + 1}: ${q.question_text}
+                            Câu ${index + 1}: ${cleanQuestionText}
                         </div>
                         <div class="options">`;
         
@@ -85,14 +90,24 @@ function renderExam(questions) {
             { key: 'D', text: q.option_d }
         ];
 
-        // Nếu is_fixed == 0 (không gắn thẻ [FIX]) thì xáo trộn đáp án
+        // Nếu is_fixed == 0 thì xáo trộn mảng đáp án
         if (q.is_fixed == 0) {
             optionsArray.sort(() => Math.random() - 0.5);
         }
 
-        optionsArray.forEach(opt => {
+        // Mảng nhãn hiển thị cố định luôn luôn là A, B, C, D từ trên xuống
+        const displayLabels = ['A', 'B', 'C', 'D'];
+
+        // Vòng lặp in đáp án ra màn hình
+        optionsArray.forEach((opt, optIndex) => {
+            // Lấy nhãn A, B, C, D theo thứ tự vòng lặp (0, 1, 2, 3)
+            let displayLetter = displayLabels[optIndex]; 
+
             html += `<label class="option-row">
-                        <span class="option-text"><b>${opt.key}.</b> ${opt.text}</span>
+                        <!-- Hiển thị nhãn mới (A, B, C, D chuẩn) -->
+                        <span class="option-text"><b>${displayLetter}.</b> ${opt.text}</span>
+                        
+                        <!-- GIỮ NGUYÊN value là opt.key gốc để chấm điểm chính xác -->
                         <input type="radio" name="q_${q.id}" value="${opt.key}"> 
                      </label>`;
         });
