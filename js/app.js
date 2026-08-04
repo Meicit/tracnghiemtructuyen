@@ -1,4 +1,4 @@
-// Cấu hình URL API tới Hosting Viettel
+// Thay đổi thành tên miền chứa API trên Viettel của bạn
 const API_URL = "https://xabinhhung.gov.vn/api_tracnghiem"; 
 
 let candidateData = {};
@@ -17,12 +17,11 @@ function startExam() {
 
     document.getElementById('register-screen').classList.add('hidden');
     document.getElementById('exam-screen').classList.remove('hidden');
-
     fetchExam();
 }
 
 function fetchExam() {
-    document.getElementById('quiz-container').innerHTML = "<p>Đang tải đề thi...</p>";
+    document.getElementById('quiz-container').innerHTML = "<p style='text-align:center;'>Đang tải đề thi...</p>";
     
     fetch(`${API_URL}/api_get_exam.php`)
         .then(response => response.json())
@@ -33,19 +32,20 @@ function fetchExam() {
             } else {
                 alert("Lỗi tải đề thi!");
             }
-        });
+        })
+        .catch(error => alert("Không thể kết nối tới máy chủ!"));
 }
 
 function renderExam(questions) {
     const container = document.getElementById('quiz-container');
     container.innerHTML = "";
-
-    // Xáo trộn vị trí 5 câu hỏi
     questions.sort(() => Math.random() - 0.5);
 
     questions.forEach((q, index) => {
         let html = `<div class="question-box" data-id="${q.id}">
-                        <p><b>Câu ${index + 1}:</b> ${q.question_text}</p>
+                        <div class="question-title">
+                            Câu ${index + 1}: ${q.question_text}
+                        </div>
                         <div class="options">`;
         
         let optionsArray = [
@@ -55,15 +55,15 @@ function renderExam(questions) {
             { key: 'D', text: q.option_d }
         ];
 
-        // LOGIC CHỐNG LỖI XÁO TRỘN ĐÁP ÁN: Nếu is_fixed == 0 thì mới xáo trộn
+        // Nếu is_fixed == 0 (không gắn thẻ [FIX]) thì xáo trộn đáp án
         if (q.is_fixed == 0) {
             optionsArray.sort(() => Math.random() - 0.5);
         }
 
         optionsArray.forEach(opt => {
-            html += `<label>
+            html += `<label class="option-row">
+                        <span class="option-text"><b>${opt.key}.</b> ${opt.text}</span>
                         <input type="radio" name="q_${q.id}" value="${opt.key}"> 
-                        ${opt.key}. ${opt.text}
                      </label>`;
         });
 
@@ -89,20 +89,18 @@ function startTimer() {
 
 function submitExam() {
     clearInterval(timerInterval);
-    
     let answers = {};
+    
     document.querySelectorAll('.question-box').forEach(box => {
         let qId = box.getAttribute('data-id');
         let selected = box.querySelector(`input[name="q_${qId}"]:checked`);
         if (selected) {
-            answers[qId] = selected.value; // Gửi key gốc (A,B,C,D) về server
+            answers[qId] = selected.value;
         }
     });
 
-    const payload = {
-        candidate: candidateData,
-        answers: answers
-    };
+    const payload = { candidate: candidateData, answers: answers };
+    document.querySelector('.btn-success').innerText = "Đang chấm điểm...";
 
     fetch(`${API_URL}/api_submit_exam.php`, {
         method: "POST",
@@ -113,11 +111,16 @@ function submitExam() {
     .then(data => {
         document.getElementById('exam-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
-        
         document.getElementById('result-content').innerHTML = `
-            <p>Thí sinh: <b>${candidateData.full_name}</b></p>
+            <p>Họ và tên: <b>${candidateData.full_name}</b></p>
+            <p>Trường: <b>${candidateData.school}</b></p>
+            <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
             <p>Số câu đúng: <b>${data.correct_count} / ${data.total}</b></p>
-            <h3 style="color: green;">Điểm số: ${data.score}</h3>
+            <h1 style="color: #28a745; font-size: 40px; margin: 10px 0;">${data.score} <span style="font-size: 20px; color:#555;">điểm</span></h1>
         `;
+    })
+    .catch(error => {
+        alert("Lỗi nộp bài! Vui lòng thử lại.");
+        document.querySelector('.btn-success').innerText = "Nộp bài";
     });
 }
