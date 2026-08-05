@@ -2,12 +2,11 @@
 const API_URL = "https://xabinhhung.gov.vn/api_tracnghiem"; 
 
 let candidateData = {};
-let examDuration = 300; // 5 phút (300 giây)
+let examDuration = 300; 
 let timerInterval;
 let examQuestions = []; 
 let userAnswers = {};
 
-// 1. TỰ ĐỘNG KHÔI PHỤC BÀI THI KHI TẢI TRANG (F5 HOẶC MỞ LẠI TAB)
 window.onload = function() {
     const savedState = localStorage.getItem('quiz_state');
     
@@ -23,17 +22,15 @@ window.onload = function() {
             document.getElementById('register-screen').classList.add('hidden');
             document.getElementById('exam-screen').classList.remove('hidden');
             
-            renderExam(examQuestions); // Render lại đúng đề cũ
-            restoreAnswers();          // Tick lại các đáp án đã chọn
-            startTimer();              // Chạy tiếp đồng hồ
+            renderExam(examQuestions); 
+            restoreAnswers();          
+            startTimer();              
         } else {
-            // Nếu hết giờ mà lỡ tắt web, vào lại nó sẽ tự động nộp bài luôn
             submitExam();
         }
     }
 };
 
-// 2. HÀM LƯU NHÁP VÀO BỘ NHỚ TRÌNH DUYỆT (LOCAL STORAGE)
 function saveState() {
     const state = {
         candidate: candidateData,
@@ -45,11 +42,10 @@ function saveState() {
 }
 
 function startExam() {
+    // Ép khoảng trắng dư thừa về 1 khoảng trắng duy nhất
     candidateData.full_name = document.getElementById('full_name').value.replace(/\s+/g, ' ').trim();
-
-    
     candidateData.birth_year = document.getElementById('birth_year').value.trim();
-    candidateData.school = document.getElementById('school').value.trim();
+    candidateData.school = document.getElementById('school').value.replace(/\s+/g, ' ').trim();
 
     if(!candidateData.full_name || !candidateData.birth_year || !candidateData.school) {
         alert("Vui lòng nhập đầy đủ thông tin!");
@@ -60,7 +56,6 @@ function startExam() {
     startBtn.innerText = "Đang kiểm tra dữ liệu...";
     startBtn.disabled = true;
 
-    // Kiểm tra xem thí sinh đã nộp bài trong DB chưa
     fetch(`${API_URL}/api_check_candidate.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -77,7 +72,6 @@ function startExam() {
             document.getElementById('register-screen').classList.add('hidden');
             document.getElementById('exam-screen').classList.remove('hidden');
             
-            // Khởi tạo mới hoàn toàn
             localStorage.removeItem('quiz_state');
             userAnswers = {};
             examDuration = 300; 
@@ -103,7 +97,6 @@ function fetchExam() {
             if(res.status === "success") {
                 examQuestions = res.data;
                 
-                // LƯU Ý: Tiến hành xáo trộn (Shuffle) ngay tại đây CHỈ 1 LẦN DUY NHẤT
                 examQuestions.sort(() => Math.random() - 0.5);
                 
                 examQuestions.forEach(q => {
@@ -116,11 +109,10 @@ function fetchExam() {
                     if (q.is_fixed == 0) {
                         opts.sort(() => Math.random() - 0.5);
                     }
-                    // Lưu cấu trúc đáp án đã xáo trộn vào mảng để dùng cố định
                     q.displayOptions = opts; 
                 });
 
-                saveState(); // Lưu ngay vào localStorage
+                saveState(); 
                 renderExam(examQuestions);
                 startTimer();
             } else {
@@ -149,7 +141,6 @@ function renderExam(questions) {
             let displayLetter = displayLabels[optIndex]; 
             html += `<label class="option-row">
                         <span class="option-text"><b>${displayLetter}.</b> ${opt.text}</span>
-                        <!-- Gọi hàm handleAnswerChange mỗi khi thí sinh tick chọn -->
                         <input type="radio" name="q_${q.id}" value="${opt.key}" onchange="handleAnswerChange('${q.id}', '${opt.key}')"> 
                      </label>`;
         });
@@ -159,13 +150,11 @@ function renderExam(questions) {
     });
 }
 
-// 3. LƯU ĐÁP ÁN NGAY KHI THÍ SINH TICK CHỌN
 function handleAnswerChange(qId, selectedValue) {
     userAnswers[qId] = selectedValue;
-    saveState(); // Cập nhật lại localStorage
+    saveState(); 
 }
 
-// 4. HÀM PHỤC HỒI CÁC ĐÁP ÁN ĐÃ CHỌN (NẾU F5 TRANG)
 function restoreAnswers() {
     for (let qId in userAnswers) {
         let radio = document.querySelector(`input[name="q_${qId}"][value="${userAnswers[qId]}"]`);
@@ -178,14 +167,13 @@ function restoreAnswers() {
 function startTimer() {
     const display = document.getElementById('timer-display');
     
-    // In giờ ra ngay giây đầu tiên tránh độ trễ
     let m = Math.floor(examDuration / 60);
     let s = examDuration % 60;
     display.innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
 
     timerInterval = setInterval(() => {
         examDuration--;
-        saveState(); // Cứ 1 giây lại lưu tiến độ 1 lần
+        saveState(); 
 
         let m = Math.floor(examDuration / 60);
         let s = examDuration % 60;
@@ -226,7 +214,6 @@ function submitExam() {
     })
     .then(res => res.json())
     .then(data => {
-        // --- NỘP THÀNH CÔNG -> XÓA BỘ NHỚ TẠM ---
         localStorage.removeItem('quiz_state');
 
         document.getElementById('exam-screen').classList.add('hidden');
@@ -238,12 +225,17 @@ function submitExam() {
             <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
             <p>Số câu đúng: <b>${data.correct_count} / ${data.total}</b></p>
             <h1 style="color: #28a745; font-size: 40px; margin: 10px 0;">${data.score} <span style="font-size: 20px; color:#555;">điểm</span></h1>
+            
+            <div style="background-color: #fff3cd; padding: 15px; border-radius: 5px; border: 1px solid #ffeeba; margin-top: 20px; color: #856404;">
+                <p style="margin: 0 0 5px 0; font-size: 15px;"><b>MÃ XÁC THỰC BÀI THI:</b></p>
+                <h3 style="margin: 0; color: #d39e00; letter-spacing: 2px; font-size: 24px;">${data.result_code}</h3>
+                <p style="margin: 8px 0 0 0; font-size: 13px;"><i>* Bắt buộc: Vui lòng chụp ảnh màn hình hoặc ghi lại mã này để làm bằng chứng đối chiếu.</i></p>
+            </div>
         `;
     })
     .catch(error => {
         alert("Lỗi nộp bài! Vui lòng thử lại.");
         document.querySelector('.btn-success').innerText = "Nộp bài";
         document.querySelector('.btn-success').disabled = false;
-        // LƯU Ý: Nếu mạng rớt không nộp được, bộ nhớ tạm KHÔNG bị xóa. Học sinh có thể bấm Nộp lại.
     });
 }
