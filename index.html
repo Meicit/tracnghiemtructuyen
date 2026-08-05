@@ -17,7 +17,93 @@
     <input type="text" id="full_name" placeholder="Ví dụ: Nguyễn Văn A" onblur="this.value = this.value.replace(/\s+/g, ' ').trim()">
     </div>
         <div class="form-group"><label>Năm sinh</label><input type="number" id="birth_year" placeholder="Ví dụ: 2005"></div>
-        <div class="form-group"><label>Trường</label><input type="text" id="school" placeholder="Ví dụ: THPT Nguyễn Trãi"></div>
+        <div class="form-group">
+            <label>Trường</label>
+            <input list="school-list" id="school" placeholder="Bấm vào để chọn trường... hoặc nhập tên trường để tìm trường VD: Bình Hưng">
+            <datalist id="school-list">
+                <option value="Mầm non Thủy Tiên">
+                <option value="Mầm non Thủy Tiên 1">
+                <option value="Mầm non Thủy Tiên 2">
+                <option value="Mầm non Hướng Dương 2">
+                <option value="Mầm non Hướng Dương">
+                <option value="Mầm non Bình Hưng">
+                <option value="Tiểu học Phong Phú">
+                <option value="Tiểu học Phong Phú 2">
+                <option value="Tiểu học Bình Hưng">
+                <option value="Tiểu học Lê Quý Đôn">
+                <option value="Tiểu học Nguyễn Bỉnh Khiêm">
+                <option value="Tiểu học Phạm Hùng">
+                <option value="THCS Phong Phú">
+                <option value="THCS Nguyễn Thái Bình">
+                <option value="THCS Trung Sơn">
+                <option value="THPT Phong Phú">
+                <option value="Trung tâm HTPTGDHN Bình Chánh">
+                <option value="TH-THCS-THPT Albert Einstein">
+                <option value="Trường Quốc Tế Anh Việt">
+                <option value="Trường Mầm non UTS Nam Sài Gòn">
+                <option value="MN Tuệ Đức">
+                <option value="MN Nam Mỹ">
+                <option value="MN Bé Yêu">
+                <option value="MN Canada - Việt Nam">
+                <option value="MN Vườn Trẻ Thơ">
+                <option value="MN Bé Xinh">
+                <option value="Nhóm Trẻ Vườn Cầu Vòng">
+                <option value="Lớp MN Bé Vui">
+                <option value="Lớp MN Vườn Nhà Mơ">
+                <option value="Lớp MN Thỏ Trắng 2">
+                <option value="Lớp MN Mặt Trời Nhỏ 6A">
+                <option value="Lớp MG Bé Xinh 2">
+                <option value="Lớp MG Mơ Ước">
+                <option value="Lớp MN Anh Việt">
+                <option value="Lớp MN Miền Cổ Tích">
+                <option value="Lớp Mầm non Phong Phú">
+                <option value="Lớp mẫu giáo Thỏ Trắng">
+                <option value="Lớp MG Hoa Anh Đào Nhỏ">
+                <option value="Lớp MG Sao Sáng">
+                <option value="Lớp MN Hồng Hạc">
+                <option value="Lớp MN Hoa Anh Đào Nhỏ">
+                <option value="Lớp MN Em Bé Hạnh Phúc">
+                <option value="Lớp MN Vui Vẻ">
+                <option value="Lớp MN Ngôi Sao Nhỏ">
+                <option value="Lớp MN Cây Con 3">
+                <option value="Lớp MN Phú Hòa">
+                <option value="Lớp MN Mặt Trời">
+                <option value="Nhóm trẻ Thế giới sáng tạo">
+                <option value="Lớp MN Tuổi Thơ Hồng">
+                <option value="Lớp MN Tuổi Thơ Xanh 2">
+                <option value="Lớp MG Sen Việt 2">
+                <option value="Lớp MN Ngôi Nhà Ong Xinh 2">
+                <option value="Lớp MN Thiên Phúc 4">
+                <option value="Lớp MN Ngôi Sao Lấp Lánh">
+                <option value="Lớp MN Song Nguyên">
+                <option value="Lớp MN Ánh Bình Minh C">
+                <option value="Lớp MN Chú Ong Vàng 1">
+                <option value="Lớp MG Chú Ong Vàng 2">
+                <option value="Lớp MN Cầu Vồng Nhỏ">
+                <option value="Lớp MN Ngôi Nhà Ong Xinh">
+                <option value="Lớp MG Tuổi Thần Tiên">
+                <option value="Lớp MN Bước Chân Nhỏ">
+                <option value="Lớp MN Hoàng Oanh 8">
+                <option value="Lớp MN Hải Vân">
+                <option value="Lớp MG Hoàng Anh Nhỏ">
+                <option value="Lớp MN Kiến Tạo Tương Lai">
+                <option value="Nhóm trẻ Thường Xuân Nhỏ">
+                <option value="Lớp MG Thường Xuân Nhỏ 2">
+                <option value="Lớp MN Cây Con">
+                <option value="Lớp MG Kim Ngân">
+                <option value="Lớp MN Trẻ Thơ Việt">
+                <option value="Lớp MN Đồ Rê Mí">
+                <option value="Lớp MG Sen Việt">
+                <option value="Lớp MN Ánh Bình Minh">
+                <option value="Lớp MN Trúc Xanh">
+                <option value="Lớp MG Ánh Mai">
+                <option value="Lớp MG Bé Thiên Thần">
+                <option value="Lớp MN Á Châu 2">
+                <option value="Lớp MG Nắng Vàng">
+                <option value="Lớp MN Thông Minh">
+                <option value="Lớp MN Thiên An 2">
+            </datalist>
+        </div>
         <button onclick="startExam()">Bắt đầu thi</button>
     </div>
 
