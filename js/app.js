@@ -73,6 +73,11 @@ function startExam() {
         alert("Vui lòng nhập đầy đủ thông tin!");
         return;
     }
+    // Kiểm tra tên trường có hợp lệ không
+    if(!validSchools.includes(candidateData.school)) {
+        alert("Vui lòng chọn đúng tên trường có trong danh sách!");
+        return;
+    }
 
     const startBtn = document.querySelector('#register-screen button');
     startBtn.innerText = "Đang kiểm tra dữ liệu...";
