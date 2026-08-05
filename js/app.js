@@ -6,7 +6,29 @@ let examDuration = 300;
 let timerInterval;
 let examQuestions = []; 
 let userAnswers = {};
-
+const validSchools = [
+    "Mầm non Thủy Tiên", "Mầm non Thủy Tiên 1", "Mầm non Thủy Tiên 2", "Mầm non Hướng Dương 2",
+    "Mầm non Hướng Dương", "Mầm non Bình Hưng", "Tiểu học Phong Phú", "Tiểu học Phong Phú 2",
+    "Tiểu học Bình Hưng", "Tiểu học Lê Quý Đôn", "Tiểu học Nguyễn Bỉnh Khiêm", "Tiểu học Phạm Hùng",
+    "THCS Phong Phú", "THCS Nguyễn Thái Bình", "THCS Trung Sơn", "THPT Phong Phú",
+    "Trung tâm HTPTGDHN Bình Chánh", "TH-THCS-THPT Albert Einstein", "Trường Quốc Tế Anh Việt",
+    "Trường Mầm non UTS Nam Sài Gòn", "MN Tuệ Đức", "MN Nam Mỹ", "MN Bé Yêu",
+    "MN Canada - Việt Nam", "MN Vườn Trẻ Thơ", "MN Bé Xinh", "Nhóm Trẻ Vườn Cầu Vòng",
+    "Lớp MN Bé Vui", "Lớp MN Vườn Nhà Mơ", "Lớp MN Thỏ Trắng 2", "Lớp MN Mặt Trời Nhỏ 6A",
+    "Lớp MG Bé Xinh 2", "Lớp MG Mơ Ước", "Lớp MN Anh Việt", "Lớp MN Miền Cổ Tích",
+    "Lớp Mầm non Phong Phú", "Lớp mẫu giáo Thỏ Trắng", "Lớp MG Hoa Anh Đào Nhỏ", "Lớp MG Sao Sáng",
+    "Lớp MN Hồng Hạc", "Lớp MN Hoa Anh Đào Nhỏ", "Lớp MN Em Bé Hạnh Phúc", "Lớp MN Vui Vẻ",
+    "Lớp MN Ngôi Sao Nhỏ", "Lớp MN Cây Con 3", "Lớp MN Phú Hòa", "Lớp MN Mặt Trời",
+    "Nhóm trẻ Thế giới sáng tạo", "Lớp MN Tuổi Thơ Hồng", "Lớp MN Tuổi Thơ Xanh 2", "Lớp MG Sen Việt 2",
+    "Lớp MN Ngôi Nhà Ong Xinh 2", "Lớp MN Thiên Phúc 4", "Lớp MN Ngôi Sao Lấp Lánh", "Lớp MN Song Nguyên",
+    "Lớp MN Ánh Bình Minh C", "Lớp MN Chú Ong Vàng 1", "Lớp MG Chú Ong Vàng 2", "Lớp MN Cầu Vồng Nhỏ",
+    "Lớp MN Ngôi Nhà Ong Xinh", "Lớp MG Tuổi Thần Tiên", "Lớp MN Bước Chân Nhỏ", "Lớp MN Hoàng Oanh 8",
+    "Lớp MN Hải Vân", "Lớp MG Hoàng Anh Nhỏ", "Lớp MN Kiến Tạo Tương Lai", "Nhóm trẻ Thường Xuân Nhỏ",
+    "Lớp MG Thường Xuân Nhỏ 2", "Lớp MN Cây Con", "Lớp MG Kim Ngân", "Lớp MN Trẻ Thơ Việt",
+    "Lớp MN Đồ Rê Mí", "Lớp MG Sen Việt", "Lớp MN Ánh Bình Minh", "Lớp MN Trúc Xanh",
+    "Lớp MG Ánh Mai", "Lớp MG Bé Thiên Thần", "Lớp MN Á Châu 2", "Lớp MG Nắng Vàng",
+    "Lớp MN Thông Minh", "Lớp MN Thiên An 2"
+];
 window.onload = function() {
     const savedState = localStorage.getItem('quiz_state');
     
