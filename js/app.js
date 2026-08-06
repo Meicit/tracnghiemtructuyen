@@ -2,7 +2,7 @@
 const API_URL = "https://xabinhhung.gov.vn/api_tracnghiem"; 
 
 let candidateData = {};
-let examDuration = 300; 
+let examDuration = 900; 
 let timerInterval;
 let examQuestions = []; 
 let userAnswers = {};
@@ -101,7 +101,7 @@ function startExam() {
             
             localStorage.removeItem('quiz_state');
             userAnswers = {};
-            examDuration = 300; 
+            examDuration = 900; 
             
             fetchExam();
         } else {
